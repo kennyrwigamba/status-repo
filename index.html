@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enhanced Image with Gradient Background Generator</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap"
+      rel="stylesheet"
+    />  
+    <link rel="manifest" href="assets/js/manifest.json">
+  </head>
+  <body>
+
+
+<!-- -------- Main App container ---------- -->
+<div class="main-container">
+  <div class="top-nav">
+    <div class="app-logo">
+      <span>Status Reposter</span>
+    </div>
+    <div class="top-save-btn">
+      <button class="btn" id="downloadBtn" disabled>Save</button>
+    </div>
+  </div>
+  
+  <div class="app-container">
+    <!-- ###### Canvas container ###### -->
+    <div class="canvas-container">
+      <canvas id="outputCanvas"></canvas>
+    </div>
+
+    <div class="upload-area uploadImageBtn">
+      <p>Click to select or drag and drop an image</p>
+      <input type="file" id="fileInput" accept="image/*" />
+    </div>
+  </div>
+
+
+</div>
+
+
+    <!-- ##### Bottom Nav ##### -->
+    <div class="botton-nav">
+      <button class="bottom-nav-btn nav-btn-modal" id="gradientBottomBtn" class="active" data-modal="gradient">
+        <box-icon name='palette'></box-icon>
+        <span>Gradient</span>
+      </button>
+      <button class="bottom-nav-btn nav-btn-modal" id="imageBottomBtn" data-modal="image">
+        <box-icon name='image-alt' ></box-icon>
+        <span>Image</span>
+      </button>
+      <button class="bottom-nav-btn uploadImageBtn" id="uploadBottomBtn" data-modal="plus">
+        <box-icon name='plus' color="white"></box-icon>
+        <input type="file" id="fileInput" accept="image/*" />
+      </button>
+      <button class="bottom-nav-btn nav-btn-modal" id="canvasBottomBtn" data-modal="canvas">
+        <box-icon name='crop' ></box-icon>
+        <span>Canvas</span>
+      </button>
+      <button class="bottom-nav-btn nav-btn-modal" id="downloadBottomBtn" data-modal="settings">
+        <box-icon name='Cog' ></box-icon>
+        <span>Settings</span>
+      </button>
+    </div>
+
+
+  <!-- Gradient Settings Modal -->
+  <div id="gradientModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Gradient Settings</h2>
+        <button class="close-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-content">
+        <div id="colorsDisplay" class="form-group" style="display: none;">
+          <label class="form-label">Extracted Colors</label>
+        </div>
+
+      <!-- Regenrate Btn -->
+      <button class="form-btn" id="regenerateBtn" disabled>Regenerate Image colors</button>
+
+        <div class="form-group">
+          <label class="form-label">Custom Colors</label>
+          <div class="custom-color-grid">
+            <div class="custom-color-item">
+              <input type="color" id="customColor1" class="color-input" value="#ff0000">
+              <button class="use-btn" id="addColor1">Use</button>
+            </div>
+            <div class="custom-color-item">
+              <input type="color" id="customColor2" class="color-input" value="#0000ff">
+              <button class="use-btn" id="addColor2">Use</button>
+            </div>
+            <div class="custom-color-item">
+              <input type="color" id="customColor3" class="color-input" value="#00ff00">
+              <button class="use-btn" id="addColor3">Use</button>
+            </div>
+          </div>
+          <button id="resetColors" class="form-btn">Reset to Image Colors</button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Gradient Type</label>
+          <select id="gradientType" class="form-control">
+            <option value="linear">Linear</option>
+            <option value="radial">Radial</option>
+          </select>
+          <!-- <div class="radio-group">
+            <div class="radio-item">
+              <input type="radio" id="linearGradient" name="gradientType" value="linear" checked>
+              <label for="linearGradient">Linear</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" id="radialGradient" name="gradientType" value="radial">
+              <label for="radialGradient">Radial</label>
+            </div>
+          </div> -->
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="gradientDirection">Direction</label>
+          <select id="gradientDirection" class="form-control">
+            <option value="to bottom">Top to Bottom</option>
+            <option value="to right">Left to Right</option>
+            <option value="to bottom right">Diagonal</option>
+            <option value="to top">Bottom to Top</option>
+            <option value="to left">Right to Left</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Image Settings Modal -->
+    <div id="imageModal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title">Image Settings</h2>
+          <button class="close-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-content">
+          <div class="form-group">
+            <div class="slider-container">
+              <div class="slider-header">
+                <label class="form-label" for="imageScale">Image Scale</label>
+                <span id="imageScaleValue" class="slider-value">80%</span>
+              </div>
+              <input type="range" id="imageScale" class="slider" min="10" max="100" step="5" value="80">
+            </div>
+  
+            <div class="slider-container">
+              <div class="slider-header">
+                <label class="form-label" for="padding">Padding</label>
+                <span id="paddingValue" class="slider-value">50px</span>
+              </div>
+              <input type="range" id="padding" class="slider" min="0" max="200" step="10" value="50">
+            </div>
+  
+            <div class="slider-container">
+              <div class="slider-header">
+                <label class="form-label" for="rotation">Rotation</label>
+                <span id="rotationValue" class="slider-value">0°</span>
+              </div>
+              <input type="range" id="rotation" class="slider" min="-90" max="90" step="1" value="0">
+            </div>
+
+            <div class="slider-container">
+              <div class="slider-header">
+                <label class="form-label" for="borderRadius">Border Radius</label>
+                <span id="borderRadiusValue" class="slider-value">30px</span>
+              </div>
+              <input type="range" id="borderRadius" class="slider" min="0" max="50" step="1" value="30">
+            </div>
+  
+            <div class="slider-container">
+              <div class="slider-header">
+                <label class="form-label" for="borderWidth">Border Width</label>
+                <span id="borderWidthValue" class="slider-value">0px</span>
+              </div>
+              <input type="range" id="borderWidth" class="slider" min="0" max="50" step="1" value="0">
+            </div>
+  
+            <div class="form-group">
+              <label class="form-label" for="borderColor">Border Color</label>
+              <input type="color" style="width: 80px; height: 50px;" id="borderColor" class="form-control" value="#ffffff">
+            </div>
+  
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- Canvas Settings Modal -->
+  <div id="canvasModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Canvas Settings</h2>
+        <button class="close-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-content">
+        <div class="form-group">
+          <label class="form-label" for="aspectRatio">Aspect Ratio</label>
+          <select id="aspectRatio" class="form-control">
+            <option value="9:16">9:16 (Portrait - Instagram Story)</option>
+            <option value="16:9">16:9 (Landscape - YouTube)</option>
+            <option value="1:1">1:1 (Square - Instagram)</option>
+            <option value="4:5">4:5 (Portrait - Instagram)</option>
+            <option value="4:3">4:3 (Standard)</option>
+            <option value="3:2">3:2 (Photo)</option>
+            <option value="21:9">21:9 (Ultrawide)</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+
+        <div id="customAspectControls" class="form-group" style="display: none;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div>
+              <label class="form-label" for="customWidth">Width</label>
+              <input type="number" id="customWidth" class="form-control" min="100" max="3000" value="1080" step="10">
+            </div>
+            <div>
+              <label class="form-label" for="customHeight">Height</label>
+              <input type="number" id="customHeight" class="form-control" min="100" max="3000" value="1920" step="10">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="canvasQuality">Output Quality</label>
+          <select id="canvasQuality" class="form-control">
+            <option value="1.0">High (1.0)</option>
+            <option value="0.9">Medium (0.9)</option>
+            <option value="0.8">Low (0.8)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <script src="assets/js/script.js"></script>
+    <script src="assets/js/modal.js"></script>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+  </body>
+</html>
